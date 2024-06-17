@@ -8,6 +8,8 @@ from mbuild import power_manage_module
 from mbuild.ranging_sensor import ranging_sensor_class
 import math
 
+smartservo_1 = smartservo_class("M6", "INDEX1")
+
 # def auto():
 #         #define ranging_sensor and set the distance varable
 #         ranging_sensor_1 = ranging_sensor_class("PORT1", "INDEX1") 
@@ -114,15 +116,32 @@ def feed_control():
         else:
                 power_expand_board.set_power("DC2", 0)
 
+def feed_blushless():
+        if(gamepad.get_joystick("Rx") == 100):
+                power_expand_board.set_power("DC3", -100)
+        elif(gamepad.get_joystick("Rx") == -100):
+                power_expand_board.set_power("DC3", 100)
+        else:
+                power_expand_board.set_power("DC3", 0)
+
+
+
 Front_feed = False
 Laser = False
 RY = gamepad.get_joystick("Ry")
 
+servo_driver_1 = servo_driver_class("PORT1", "INDEX1")
+smartservo_1 = smartservo_class("M1", "INDEX1")
 while True:
+        smartservo_1 = smartservo_class("M6", "INDEX1")
         movement()
+        if(gamepad.get_joystick("Ly") <= 100 or gamepad.get_joystick("Ly") <= -100):
+                smartservo_1.move_to(-gamepad.get_joystick("Ly"), 15)
+        else:
+                smartservo_1.set_angle(0)
         #Use right analog to control feed
         feed_control()
-        
+        feed_blushless()
         #power_expand_board("DC2", -gamepad.get_joystick("Ry")) {Not working}
 
         #Lazer control and condition
@@ -154,7 +173,3 @@ while True:
                 power_expand_board.set_power("DC1", -100)
         else:
                 power_expand_board.set_power("DC1", 0)        
-
-        
-
-        
