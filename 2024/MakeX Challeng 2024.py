@@ -51,12 +51,12 @@ def movement():
         right = gamepad.is_key_pressed("Right")
         up = gamepad.is_key_pressed("Up")
         down = gamepad.is_key_pressed("Down")
-        if(left and right == False and up == False and down == False):
+        if(gamepad.get_joystick("Lx") == -100):
                 active_motor(2, 'b')
                 active_motor(5, 'f')
                 active_motor(3, 'f')
                 active_motor(4, 'b')
-        elif(right and left == False and up == False and down == False):
+        elif(gamepad.get_joystick("Lx") == 100):
                 active_motor(2, 'f')
                 active_motor(5, 'b')
                 active_motor(3, 'b')
@@ -170,6 +170,10 @@ while True:
                         Front_feed = True
         #condition for motor at the Front_feed
         if(Front_feed == True):
-                power_expand_board.set_power("DC1", -100)
+                power_expand_board.set_power("DC1", -60)
         else:
                 power_expand_board.set_power("DC1", 0)        
+
+        
+
+        
