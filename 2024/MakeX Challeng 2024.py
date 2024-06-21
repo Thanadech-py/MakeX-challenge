@@ -170,9 +170,16 @@ while True:
                         Front_feed = True
         #condition for motor at the Front_feed
         if(Front_feed == True):
-                power_expand_board.set_power("DC1", -60)
+                power_expand_board.set_power("DC1", -75)
         else:
-                power_expand_board.set_power("DC1", 0)        
+                power_expand_board.set_power("DC1", 0)
+        #condition for gripper to grab 
+        if(gamepad.is_key_pressed("N1")):
+                power_expand_board.set_power("DC4", -80)
+        elif(gamepad.is_key_pressed("N4")):
+                power_expand_board.set_power("DC4", 80)
+        else:
+                power_expand_board.set_power("DC4", 0)
 
         
 
