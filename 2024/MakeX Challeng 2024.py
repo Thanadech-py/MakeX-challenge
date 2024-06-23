@@ -1,3 +1,4 @@
+
 import novapi
 from mbuild import gamepad 
 from mbuild.encoder_motor import encoder_motor_class
@@ -91,15 +92,14 @@ def movement():
                 active_motor(5, 'off')
                 active_motor(3, 'off')
                 active_motor(4, 'b')
-        elif(gamepad.is_key_pressed("N4")):
+        elif(right and down == False and left == False and up == False):
                 active_motor(4, 'f')    #expand 
                 active_motor(5, 'f')   
                 active_motor(2, 'b')    #extends
                 active_motor(3, 'b')
-        elif(gamepad.is_key_pressed("N1")):
+        elif(left and down == False and up == False and right == False):
                 active_motor(4, 'b')
                 active_motor(5, 'b')   
-
                 active_motor(2, 'f')
                 active_motor(3, 'f')
         else:
@@ -110,9 +110,9 @@ def movement():
 
 def feed_control():
         if(gamepad.get_joystick("Ry") == 100):
-                power_expand_board.set_power("DC2", -65)
+                power_expand_board.set_power("DC2", 100)
         elif(gamepad.get_joystick("Ry") == -100):
-                power_expand_board.set_power("DC2", 65)
+                power_expand_board.set_power("DC2", -100)
         else:
                 power_expand_board.set_power("DC2", 0)
 
@@ -135,6 +135,7 @@ smartservo_1 = smartservo_class("M1", "INDEX1")
 while True:
         smartservo_1 = smartservo_class("M6", "INDEX1")  
         movement()
+        #condition to control blushless angles
         if(gamepad.get_joystick("Ly") <= 100 or gamepad.get_joystick("Ly") <= -100):
                 smartservo_1.move_to(-gamepad.get_joystick("Ly"), 15)
         else:
@@ -144,13 +145,13 @@ while True:
         feed_blushless()
         #power_expand_board("DC2", -gamepad.get_joystick("Ry")) {Not working}
 
-        #Lazer control and condition
+        #Lazer control and condition {Not using}
         # if(gamepad.is_key_pressed("+")):
         #         if(Laser == True):
         #                 Laser = False
         #         else:
         #                 Laser = True
-        # if(Laser == True):
+        # if(Laser == True): {Not using}
         #         power_expand_board.set_power("DC8",-50)
         # else:
         #         power_expand_board.set_power("DC8",0)
@@ -169,22 +170,22 @@ while True:
         #         else:
         #                 Front_feed = True
         #condition for motor at the Front_feed {Not Using}
-        # if(Front_feed == True):
+        # if(Front_feed == True): 
         #         power_expand_board.set_power("DC1", -75)
         # else:
         #         power_expand_board.set_power("DC1", 0)
-        #condition for gripper to grab 
+        #condition for gripper to grab {Need to be fixes}
         if(gamepad.is_key_pressed("N1")):
-                power_expand_board.set_power("DC4", -80)
+                power_expand_board.set_power("DC4", -100)
         elif(gamepad.is_key_pressed("N4")):
-                power_expand_board.set_power("DC4", 80)
+                power_expand_board.set_power("DC4", 100)
         else:
                 power_expand_board.set_power("DC4", 0)
-        #condition to control lifting fucntion 
+        #condition to control lifting fucntion {Need to be fixes}
         if(gamepad.is_key_pressed("N2")):
-                power_expand_board.set_power("DC5", 100)
-        elif(gamepad.is_key_pressed("N3")):
                 power_expand_board.set_power("DC5", -100)
+        elif(gamepad.is_key_pressed("N3")):
+                power_expand_board.set_power("DC5", 100)
         else:
                 power_expand_board.set_power("DC5", 0)
 
