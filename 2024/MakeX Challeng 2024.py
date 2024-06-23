@@ -110,9 +110,9 @@ def movement():
 
 def feed_control():
         if(gamepad.get_joystick("Ry") == 100):
-                power_expand_board.set_power("DC2", -100)
+                power_expand_board.set_power("DC2", -65)
         elif(gamepad.get_joystick("Ry") == -100):
-                power_expand_board.set_power("DC2", 100)
+                power_expand_board.set_power("DC2", 65)
         else:
                 power_expand_board.set_power("DC2", 0)
 
@@ -133,7 +133,7 @@ RY = gamepad.get_joystick("Ry")
 servo_driver_1 = servo_driver_class("PORT1", "INDEX1")
 smartservo_1 = smartservo_class("M1", "INDEX1")
 while True:
-        smartservo_1 = smartservo_class("M6", "INDEX1")
+        smartservo_1 = smartservo_class("M6", "INDEX1")  
         movement()
         if(gamepad.get_joystick("Ly") <= 100 or gamepad.get_joystick("Ly") <= -100):
                 smartservo_1.move_to(-gamepad.get_joystick("Ly"), 15)
@@ -145,34 +145,34 @@ while True:
         #power_expand_board("DC2", -gamepad.get_joystick("Ry")) {Not working}
 
         #Lazer control and condition
-        if(gamepad.is_key_pressed("+")):
-                if(Laser == True):
-                        Laser = False
-                else:
-                        Laser = True
-        if(Laser == True):
-                power_expand_board.set_power("DC8",-50)
-        else:
-                power_expand_board.set_power("DC8",0)
+        # if(gamepad.is_key_pressed("+")):
+        #         if(Laser == True):
+        #                 Laser = False
+        #         else:
+        #                 Laser = True
+        # if(Laser == True):
+        #         power_expand_board.set_power("DC8",-50)
+        # else:
+        #         power_expand_board.set_power("DC8",0)
 
         #Blushless motor control
         if(gamepad.is_key_pressed('L1') or gamepad.is_key_pressed("R1")):
                 power_expand_board.set_power("BL1",100)
                 power_expand_board.set_power("BL2",100)
         else:
-                power_expand_board.set_power("BL1",0)
+                power_expand_board.set_power("BL1",0) 
                 power_expand_board.set_power("BL2",0)
-        #condition for controling Front_feed
-        if(gamepad.is_key_pressed("L2")):
-                if(Front_feed == True):
-                        Front_feed = False
-                else:
-                        Front_feed = True
-        #condition for motor at the Front_feed
-        if(Front_feed == True):
-                power_expand_board.set_power("DC1", -75)
-        else:
-                power_expand_board.set_power("DC1", 0)
+        #condition for controling Front_feed {Not Using}
+        # if(gamepad.is_key_pressed("L2")):
+        #         if(Front_feed == True):
+        #                 Front_feed = False
+        #         else:
+        #                 Front_feed = True
+        #condition for motor at the Front_feed {Not Using}
+        # if(Front_feed == True):
+        #         power_expand_board.set_power("DC1", -75)
+        # else:
+        #         power_expand_board.set_power("DC1", 0)
         #condition for gripper to grab 
         if(gamepad.is_key_pressed("N1")):
                 power_expand_board.set_power("DC4", -80)
@@ -180,6 +180,13 @@ while True:
                 power_expand_board.set_power("DC4", 80)
         else:
                 power_expand_board.set_power("DC4", 0)
+        #condition to control lifting fucntion 
+        if(gamepad.is_key_pressed("N2")):
+                power_expand_board.set_power("DC5", 100)
+        elif(gamepad.is_key_pressed("N3")):
+                power_expand_board.set_power("DC5", -100)
+        else:
+                power_expand_board.set_power("DC5", 0)
 
         
 
