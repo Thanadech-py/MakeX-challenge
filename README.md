@@ -5,4 +5,6 @@
 </p> 
 
 The link to the Document for MakeX Challenge Competition
-- [MicroPython For NovaPI](https://github.com/Makeblock-official/micropython-api-doc/tree/master/docs/novapi/modules/modules)
+- [MicroPython For NovaPI](https://github.com/Makeblock-official/micropython-api-doc/tree/master/docs/novapi/modules/modules).
+
+- [Makeblock Officail Materials](https://grabcad.com/library/data-of-makeblock-parts-1).
