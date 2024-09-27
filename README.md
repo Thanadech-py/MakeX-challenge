@@ -5,4 +5,4 @@
 </p> 
 
 The link to the Document for MakeX Challenge Competition
-This site was built using [GitHub Pages](https://pages.github.com/).
+- [MicroPython For NovaPI](https://github.com/Makeblock-official/micropython-api-doc/tree/master/docs/novapi/modules/modules)
