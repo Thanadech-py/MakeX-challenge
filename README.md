@@ -5,4 +5,4 @@
 </p> 
 
 The link to the Document for MakeX Challenge Competition
-  <a herf="https://github.com/Makeblock-official/micropython-api-doc/tree/master/docs/novapi/modules/modules">MicroPython For NovaPi</a>
+<a herf="https://github.com/Makeblock-official/micropython-api-doc/tree/master/docs/novapi/modules/modules">
