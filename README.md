@@ -1,4 +1,3 @@
 # MakeX-challenge
-This Repository is a source code about MakeX Challeng competition 
-
-The way to use method for Micropython code is in this link https://github.com/Makeblock-official/micropython-api-doc/tree/master/docs/novapi/modules
+<h1 align="center">Hi 👋, I'm Thanadech Lapassirikul</h1>
+<h3 align="center">A Programmer and Technichian for Smart Gen Robotics team. 🤖🤖</h3>
