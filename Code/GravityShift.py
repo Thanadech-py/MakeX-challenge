@@ -21,9 +21,9 @@ SPEED_MULTIPLIER = 1
 
 class PID:
     def __init__(self, Kp, Ki, Kd, setpoint=0):
-        self.Kp = Kp  # Proportional gain
-        self.Ki = Ki  # Integral gain
-        self.Kd = Kd  # Derivative gain
+        self.Kp = Kp  # Proportional 
+        self.Ki = Ki  # Integral 
+        self.Kd = Kd  # Derivative 
         self.setpoint = setpoint  # Desired value (target)
         self.integral = 0  # Sum of errors over time
         self.previous_error = 0  # Previous error (used for derivative)
@@ -52,7 +52,6 @@ class PID:
         return output
 
     def set_setpoint(self, setpoint):
-        """ Update the target setpoint for the PID controller """
         self.setpoint = setpoint
         self.integral = 0  # Reset the integral to avoid wind-up
         self.previous_error = 0  # Reset previous error to avoid a large derivative spike
@@ -190,8 +189,6 @@ class runtime:
         else:
             motors.drive(0,0,0,0)
     def freefire():
-        entrance_feed.off()
-        feeder.off()
         if runtime.CTRL_MODE == 0:
             runtime.CTRL_MODE = 1
         else:
@@ -232,7 +229,12 @@ class shoot_mode:
         else:
             laser.off()
         #shooter_angle control
-        shooter.move(gamepad.get_joystick("Ry"), 10)
+        if gamepad.is_key_pressed("Up"):
+            shooter.move(-20, 10)
+        elif gamepad.is_key_pressed("Down"):
+            shooter.move(20, 10)
+        else:
+            shooter.move(0, 0)
 
             
 class gripper_mode:
@@ -270,7 +272,7 @@ laser = dc_motor("DC8")
 while True:
     
     if power_manage_module.is_auto_mode():
-        pass9
+        pass
         while power_manage_module.is_auto_mode():
             pass
     else:
