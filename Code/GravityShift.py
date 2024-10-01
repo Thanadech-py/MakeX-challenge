@@ -188,12 +188,15 @@ class runtime:
             holonomic.drive(-gamepad.get_joystick("Lx"), gamepad.get_joystick("Ly"), -gamepad.get_joystick("Rx"), pid=True)
         else:
             motors.drive(0,0,0,0)
-    def freefire():
-        if runtime.CTRL_MODE == 0:
-            runtime.CTRL_MODE = 1
-        else:
-            runtime.CTRL_MODE = 0
-        time.sleep(0.9)
+    def change_mode():
+        if novapi.timer() > 0.9:
+            entrance_feed.off()
+            feeder.off()
+            if runtime.CTRL_MODE == 0:
+                runtime.CTRL_MODE = 1
+            else:
+                runtime.CTRL_MODE = 0
+            novapi.reset_timer()
 
 class shoot_mode:
 
@@ -230,11 +233,11 @@ class shoot_mode:
             laser.off()
         #shooter_angle control
         if gamepad.is_key_pressed("Up"):
-            shooter.move(-20, 10)
+            shooter.move(-5, 10)
         elif gamepad.is_key_pressed("Down"):
-            shooter.move(20, 10)
+            shooter.move(5, 10)
         else:
-            shooter.move(0, 0)
+            shooter.move(None, 0)
 
             
 class gripper_mode:
@@ -277,7 +280,7 @@ while True:
             pass
     else:
         if gamepad.is_key_pressed("L2") and gamepad.is_key_pressed("R2"):
-            runtime.freefire()
+            runtime.change_mode()
         else:
             runtime.move()
             if runtime.CTRL_MODE == 0:
