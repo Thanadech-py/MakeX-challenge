@@ -183,9 +183,15 @@ class runtime:
     
     # Robot state
     ENABLED = True
-    def move():
+    def move_1():
         if math.fabs(gamepad.get_joystick("Lx")) > 20 or math.fabs(gamepad.get_joystick("Ly")) > 20 or math.fabs(gamepad.get_joystick("Rx")) > 20:
             holonomic.drive(-gamepad.get_joystick("Lx"), gamepad.get_joystick("Ly"), -gamepad.get_joystick("Rx"), pid=True)
+        else:
+            motors.drive(0,0,0,0)
+
+    def move_2():
+        if math.fabs(gamepad.get_joystick("Lx")) > 20 or math.fabs(gamepad.get_joystick("Ly")) > 20 or math.fabs(gamepad.get_joystick("Rx")) > 20:
+            holonomic.drive(gamepad.get_joystick("Lx"), -gamepad.get_joystick("Ly"), -gamepad.get_joystick("Rx"), pid=True)
         else:
             motors.drive(0,0,0,0)
     def change_mode():
@@ -203,14 +209,14 @@ class shoot_mode:
     # Method to control various robot functions based on button inputs
     def control_button():
         if gamepad.is_key_pressed("R2"):
-            entrance_feed.set_reverse(False)
+            entrance_feed.set_reverse(True)
             feeder.set_reverse(False)
             entrance_feed.on()
             feeder.on()
             conveyer.set_reverse(False)
             conveyer.on()
         elif gamepad.is_key_pressed("L2"):
-            entrance_feed.set_reverse(True)
+            entrance_feed.set_reverse(False)
             feeder.set_reverse(True)
             entrance_feed.on()
             feeder.on()
@@ -229,13 +235,15 @@ class shoot_mode:
         if gamepad.is_key_pressed("≡"):
             laser.set_reverse(True)
             laser.on()
-        else:
+        elif gamepad.is_key_pressed("+"):
             laser.off()
+        else:
+            pass
         #shooter_angle control
         if gamepad.is_key_pressed("Up"):
-            shooter.move(-5, 10)
+            shooter.move(20, 15)
         elif gamepad.is_key_pressed("Down"):
-            shooter.move(5, 10)
+            shooter.move(-20, 15)
         else:
             shooter.move(None, 0)
 
@@ -244,10 +252,10 @@ class gripper_mode:
     # Method to control various robot functions based on button inputs
     def control_button():
         if gamepad.is_key_pressed("N2"):
-            lift.set_reverse(True)
+            lift.set_reverse(False)
             lift.on()
         elif gamepad.is_key_pressed("N3"):
-            lift.set_reverse(False)
+            lift.set_reverse(True)
             lift.on()
         else:
             lift.off()
@@ -282,8 +290,9 @@ while True:
         if gamepad.is_key_pressed("L2") and gamepad.is_key_pressed("R2"):
             runtime.change_mode()
         else:
-            runtime.move()
             if runtime.CTRL_MODE == 0:
                 shoot_mode.control_button()
+                runtime.move_1()
             else:
                 gripper_mode.control_button()
+                runtime.move_2()
