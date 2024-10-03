@@ -10,6 +10,7 @@ from mbuild.smart_camera import smart_camera_class
 from mbuild.ranging_sensor import ranging_sensor_class
 from mbuild.smartservo import smartservo_class
 from mbuild import power_manage_module
+import time
 
 left_forward_wheel = encoder_motor_class("M2", "INDEX1")
 right_forward_wheel = encoder_motor_class("M3", "INDEX1")
@@ -17,13 +18,16 @@ left_back_wheel = encoder_motor_class("M5", "INDEX1")
 right_back_wheel = encoder_motor_class("M6", "INDEX1")
 
 MAX_SPEED = 255
-SPEED_MULTIPLIER = 1
+SPEED_MULTIPLIER = 2.1
+PID_SPEED_MULTIPLIER = 0.6
+BL_POWER = 90
+
 
 class PID:
     def __init__(self, Kp, Ki, Kd, setpoint=0):
-        self.Kp = Kp  # Proportional 
-        self.Ki = Ki  # Integral 
-        self.Kd = Kd  # Derivative 
+        self.Kp = Kp  # Proportional gain
+        self.Ki = Ki  # Integral gain
+        self.Kd = Kd  # Derivative gain
         self.setpoint = setpoint  # Desired value (target)
         self.integral = 0  # Sum of errors over time
         self.previous_error = 0  # Previous error (used for derivative)
@@ -56,6 +60,7 @@ class PID:
         self.integral = 0  # Reset the integral to avoid wind-up
         self.previous_error = 0  # Reset previous error to avoid a large derivative spike
 
+
 class motors:
     
     def drive(lf: int, lb: int, rf: int, rb: int):
@@ -66,20 +71,30 @@ class motors:
     
     def stop():
         motors.drive(0, 0, 0, 0)
-
+        
 class util:
     def restrict(val, minimum, maximum):
         return max(min(val, maximum), minimum)
 
-class holonomic:        
+class holonomic:    
+
     pids = {
         "lf": PID(Kp=1, Ki=0, Kd=0),
         "lb": PID(Kp=1, Ki=0, Kd=0),
-        "rf": PID(Kp=1, Ki=0, Kd=0),
-        "rb": PID(Kp=1, Ki=0, Kd=0),
+        "rf": PID(Kp=0.9, Ki=0, Kd=0),
+        "rb": PID(Kp=0.9, Ki=0, Kd=0),
     }
-    def drive(vx, vy, wL, deadzone=5, pid=True):
-        global SPEED_MULTIPLIER
+
+    # motor tune
+    tune = {
+        "fl": 0.9,
+        "fr": 1,
+        "bl": 0.8,
+        "br": 0.9,
+    }
+
+    def drive(vx, vy, wL, deadzone=5, pid=False):
+        global SPEED_MULTIPLIER, PID_SPEED_MULTIPLIER
         # Create a deadzone so that if the joystick isn't moved perfectly,
         # the controller can still make the robot move perfectly.
         if math.fabs(vx) < math.fabs(deadzone):
@@ -89,15 +104,26 @@ class holonomic:
         if math.fabs(wL) < math.fabs(deadzone):
             wL = 0
 
-        vFL = (vx + vy + wL) * SPEED_MULTIPLIER
-        vFR = (-(vx) + vy - wL) * SPEED_MULTIPLIER
-        vBL = (-(vx) + vy + wL) * SPEED_MULTIPLIER
-        vBR = (vx + vy - wL) * SPEED_MULTIPLIER
+        # Ensure the correct speed multiplier
+        multiplier = PID_SPEED_MULTIPLIER if pid else SPEED_MULTIPLIER
+            
+        # Calculation for the wheel speed
+        vFL = (vx + (vy * 1.2) + wL) * multiplier
+        vFR = (-(vx) + (vy * 1.2) - wL) * multiplier
+        vBL = (-(vx) + (vy * 1.2) + wL) * multiplier
+        vBR = (vx + (vy * 1.2) - wL) * multiplier
         
         # Sliding check to not interfere with the normal movement, incase of tuning specific power
-        if math.fabs(vx) > math.fabs(vy):
-            vBR *= 0.8
+        if math.fabs(vx) > math.fabs(vy) and vx > 0:
+            vFL *= holonomic.tune["fl"] # หน้าซ้าย
+            vFL *= holonomic.tune["fr"] # หน้าขวา
+            vBL *= holonomic.tune["bl"] # หลังซ้าย
+            vBR *= holonomic.tune["br"] # หลังขวา
         
+        # A PID implemention.
+        # Reminder: This will significantly delay your movement.
+        # Please only use this option only when you need a precise movement.
+        # For example: Automatic Stage.
         if pid:            
             # Left Forward
             holonomic.pids["lf"].set_setpoint(vFL)
@@ -111,6 +137,7 @@ class holonomic:
             # Right Back
             holonomic.pids["rb"].set_setpoint(vBR)
             vBR = holonomic.pids["rb"].update(right_back_wheel.get_value("speed"))
+
         # Velocity
         vFL = util.restrict(vFL, -MAX_SPEED, MAX_SPEED)
         vFR = util.restrict(vFR, -MAX_SPEED, MAX_SPEED)
@@ -136,6 +163,44 @@ class holonomic:
         
     def turn_left(power):
         holonomic.drive(0, 0, -power)
+
+class Auto:
+    #define Front_distance
+    Front_distance = ranging_sensor_class("PORT1", "INDEX3")
+
+    def right():
+        entrance_feed.set_reverse(True)
+        feeder.set_reverse(False)
+        entrance_feed.on()
+        feeder.on()
+        holonomic.slide_left(50)
+        time.sleep(2.35)
+        motors.stop()
+        time.sleep(1.0)
+        holonomic.move_forward(50)
+        time.sleep(1.5)
+        motors.stop()
+        time.sleep(0.9)
+        holonomic.slide_right(50)
+        time.sleep(1.7)
+        motors.stop()
+        holonomic.move_forward(50)
+        time.sleep(0.8)
+        holonomic.turn_left(50)
+        time.sleep(1.125)
+        motors.stop()
+        shooter.move(45, 10)
+        holonomic.slide_left(20)
+        time.sleep(0.9)
+        motors.stop()
+        holonomic.turn_right(20)
+        time.sleep(0.8)
+        motors.stop()
+        laser.set_reverse(True)
+        laser.on()
+    
+    def left():
+        pass
 
 class dc_motor:
     # Default DC port
@@ -170,12 +235,13 @@ class brushless_motor:
         
     # Method to turn on the brushless motor
     def on(self) -> None:
-        power_expand_board.set_power(self.bl_port, 100)
+        power_expand_board.set_power(self.bl_port, 85)
         
     # Method to turn off the brushless motor
     def off(self) -> None:
         power_expand_board.stop(self.bl_port)
-           
+
+      
 
 class runtime:
     # Define control mode
@@ -205,21 +271,18 @@ class runtime:
             novapi.reset_timer()
 
 class shoot_mode:
-
     # Method to control various robot functions based on button inputs
     def control_button():
         if gamepad.is_key_pressed("R2"):
             entrance_feed.set_reverse(True)
-            feeder.set_reverse(False)
             entrance_feed.on()
-            feeder.on()
+            power_expand_board.set_power("DC7", 60) #feeder
             conveyer.set_reverse(False)
             conveyer.on()
         elif gamepad.is_key_pressed("L2"):
             entrance_feed.set_reverse(False)
-            feeder.set_reverse(True)
             entrance_feed.on()
-            feeder.on()
+            power_expand_board.set_power("DC7", -60) #feeder
             conveyer.set_reverse(True)
             conveyer.on()
         if gamepad.is_key_pressed("L1"):
@@ -241,9 +304,9 @@ class shoot_mode:
             pass
         #shooter_angle control
         if gamepad.is_key_pressed("Up"):
-            shooter.move(20, 15)
+            shooter.move(10, 10)
         elif gamepad.is_key_pressed("Down"):
-            shooter.move(-20, 15)
+            shooter.move(-10, 10)
         else:
             shooter.move(None, 0)
 
@@ -280,11 +343,16 @@ bl_2 = brushless_motor("BL2")
 shooter = smartservo_class("M1", "INDEX1") # only for angles
 laser = dc_motor("DC8")
 
+#define right and left distance
+left_auto = ranging_sensor_class("PORT1", "INDEX1")
+right_auto = ranging_sensor_class("PORT1", "INDEX2")
+
 while True:
     
     if power_manage_module.is_auto_mode():
-        pass
-        while power_manage_module.is_auto_mode():
+        if left_auto.get_distance() < 30:
+            Auto.right()
+        else:
             pass
     else:
         if gamepad.is_key_pressed("L2") and gamepad.is_key_pressed("R2"):
