@@ -90,7 +90,7 @@ class holonomic:
         "fl": 0.9,
         "fr": 1,
         "bl": 0.8,
-        "br": 0.9,
+        "br": 1.2,
     }
 
     def drive(vx, vy, wL, deadzone=5, pid=False):
@@ -169,12 +169,12 @@ class Auto:
     Front_distance = ranging_sensor_class("PORT1", "INDEX3")
 
     def right():
-        entrance_feed.set_reverse(True)
-        feeder.set_reverse(False)
+        entrance_feed.set_reverse(False)
+        feeder.set_reverse(True)
         entrance_feed.on()
         feeder.on()
         holonomic.slide_left(50)
-        time.sleep(2.35)
+        time.sleep(1.75)
         motors.stop()
         time.sleep(1.0)
         holonomic.move_forward(50)
@@ -200,7 +200,36 @@ class Auto:
         laser.on()
     
     def left():
-        pass
+        entrance_feed.set_reverse(False)
+        feeder.set_reverse(True)
+        entrance_feed.on()
+        feeder.on()
+        holonomic.slide_right(50)
+        time.sleep(1.75)
+        motors.stop()
+        time.sleep(1.0)
+        holonomic.move_forward(50)
+        time.sleep(1.5)
+        motors.stop()
+        time.sleep(0.9)
+        holonomic.slide_left(50)
+        time.sleep(0.8)
+        motors.stop()
+        holonomic.move_forward(50)
+        time.sleep(0.8)
+        holonomic.turn_right(50)
+        time.sleep(1.125)
+        motors.stop()
+        shooter.move(55, 10)
+        holonomic.slide_right(20)
+        time.sleep(0.9)
+        motors.stop()
+        holonomic.turn_left(20)
+        time.sleep(0.8)
+        motors.stop()
+        laser.set_reverse(True)
+        laser.on()
+        
 
 class dc_motor:
     # Default DC port
@@ -235,7 +264,7 @@ class brushless_motor:
         
     # Method to turn on the brushless motor
     def on(self) -> None:
-        power_expand_board.set_power(self.bl_port, 85)
+        power_expand_board.set_power(self.bl_port, BL_POWER)
         
     # Method to turn off the brushless motor
     def off(self) -> None:
@@ -264,6 +293,7 @@ class runtime:
         if novapi.timer() > 0.9:
             entrance_feed.off()
             feeder.off()
+            conveyer.off()
             if runtime.CTRL_MODE == 0:
                 runtime.CTRL_MODE = 1
             else:
@@ -308,9 +338,8 @@ class shoot_mode:
         elif gamepad.is_key_pressed("Down"):
             shooter.move(-10, 10)
         else:
-            shooter.move(None, 0)
-
-            
+            pass
+ 
 class gripper_mode:
     # Method to control various robot functions based on button inputs
     def control_button():
@@ -352,6 +381,8 @@ while True:
     if power_manage_module.is_auto_mode():
         if left_auto.get_distance() < 30:
             Auto.right()
+        elif right_auto.get_distance() < 30:
+            Auto.left()
         else:
             pass
     else:
