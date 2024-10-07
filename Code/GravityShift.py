@@ -334,9 +334,9 @@ class shoot_mode:
             pass
         #shooter_angle control
         if gamepad.is_key_pressed("Up"):
-            shooter.move(10, 10)
+            shooter.move(5, 9)
         elif gamepad.is_key_pressed("Down"):
-            shooter.move(-10, 10)
+            shooter.move(-5, 9)
         else:
             pass
  
