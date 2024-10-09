@@ -17,8 +17,8 @@ right_forward_wheel = encoder_motor_class("M3", "INDEX1")
 left_back_wheel = encoder_motor_class("M5", "INDEX1")
 right_back_wheel = encoder_motor_class("M6", "INDEX1")
 
-MAX_SPEED = 255
-SPEED_MULTIPLIER = 2.1
+MAX_SPEED = 300
+SPEED_MULTIPLIER = 3
 PID_SPEED_MULTIPLIER = 0.6
 BL_POWER = 90
 
@@ -119,11 +119,6 @@ class holonomic:
             vFL *= holonomic.tune["fr"] # หน้าขวา
             vBL *= holonomic.tune["bl"] # หลังซ้าย
             vBR *= holonomic.tune["br"] # หลังขวา
-        
-        # A PID implemention.
-        # Reminder: This will significantly delay your movement.
-        # Please only use this option only when you need a precise movement.
-        # For example: Automatic Stage.
         if pid:            
             # Left Forward
             holonomic.pids["lf"].set_setpoint(vFL)
@@ -170,9 +165,8 @@ class Auto:
 
     def right():
         entrance_feed.set_reverse(False)
-        feeder.set_reverse(True)
+        power_expand_board.set_power("DC7", -50)
         entrance_feed.on()
-        feeder.on()
         holonomic.slide_left(50)
         time.sleep(1.75)
         motors.stop()
@@ -201,9 +195,8 @@ class Auto:
     
     def left():
         entrance_feed.set_reverse(False)
-        feeder.set_reverse(True)
         entrance_feed.on()
-        feeder.on()
+        power_expand_board.set_power("DC7", -50)
         holonomic.slide_right(50)
         time.sleep(1.75)
         motors.stop()
@@ -303,16 +296,17 @@ class runtime:
 class shoot_mode:
     # Method to control various robot functions based on button inputs
     def control_button():
+
         if gamepad.is_key_pressed("R2"):
             entrance_feed.set_reverse(True)
             entrance_feed.on()
-            power_expand_board.set_power("DC7", 60) #feeder
+            power_expand_board.set_power("DC7", 55) #feeder
             conveyer.set_reverse(False)
             conveyer.on()
         elif gamepad.is_key_pressed("L2"):
             entrance_feed.set_reverse(False)
             entrance_feed.on()
-            power_expand_board.set_power("DC7", -60) #feeder
+            power_expand_board.set_power("DC7", -55) #feeder
             conveyer.set_reverse(True)
             conveyer.on()
         if gamepad.is_key_pressed("L1"):
@@ -332,6 +326,22 @@ class shoot_mode:
             laser.off()
         else:
             pass
+        if gamepad.is_key_pressed("N3"):
+            entrance_feed.set_reverse(True)
+            entrance_feed.on()
+            power_expand_board.set_power("DC7", 55) #feeder
+            conveyer.set_reverse(False)
+            conveyer.on()
+        elif gamepad.is_key_pressed("N2"):
+            entrance_feed.set_reverse(False)
+            entrance_feed.on()
+            power_expand_board.set_power("DC7", -55) #feeder
+            conveyer.set_reverse(True)
+            conveyer.on()
+        elif gamepad.is_key_pressed("N2") or gamepad.is_key_pressed("N3") == False:
+            entrance_feed.off()
+            feeder.off()
+            conveyer.off()
         #shooter_angle control
         if gamepad.is_key_pressed("Up"):
             shooter.move(5, 9)
