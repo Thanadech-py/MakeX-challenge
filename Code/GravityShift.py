@@ -17,8 +17,8 @@ right_forward_wheel = encoder_motor_class("M3", "INDEX1")
 left_back_wheel = encoder_motor_class("M5", "INDEX1")
 right_back_wheel = encoder_motor_class("M6", "INDEX1")
 
-MAX_SPEED = 300
-SPEED_MULTIPLIER = 3
+MAX_SPEED = 255
+SPEED_MULTIPLIER = 2.1
 PID_SPEED_MULTIPLIER = 0.6
 BL_POWER = 90
 
@@ -165,7 +165,7 @@ class Auto:
 
     def right():
         entrance_feed.set_reverse(False)
-        power_expand_board.set_power("DC7", -50)
+        power_expand_board.set_power("DC7", -25)
         entrance_feed.on()
         holonomic.slide_left(50)
         time.sleep(1.75)
@@ -183,7 +183,6 @@ class Auto:
         holonomic.turn_left(50)
         time.sleep(1.125)
         motors.stop()
-        shooter.move(45, 10)
         holonomic.slide_left(20)
         time.sleep(0.9)
         motors.stop()
@@ -196,7 +195,7 @@ class Auto:
     def left():
         entrance_feed.set_reverse(False)
         entrance_feed.on()
-        power_expand_board.set_power("DC7", -50)
+        power_expand_board.set_power("DC7", -25)
         holonomic.slide_right(50)
         time.sleep(1.75)
         motors.stop()
@@ -213,7 +212,6 @@ class Auto:
         holonomic.turn_right(50)
         time.sleep(1.125)
         motors.stop()
-        shooter.move(55, 10)
         holonomic.slide_right(20)
         time.sleep(0.9)
         motors.stop()
