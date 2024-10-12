@@ -18,7 +18,7 @@ left_back_wheel = encoder_motor_class("M5", "INDEX1")
 right_back_wheel = encoder_motor_class("M6", "INDEX1")
 
 MAX_SPEED = 255
-SPEED_MULTIPLIER = 2.1
+SPEED_MULTIPLIER = 3
 PID_SPEED_MULTIPLIER = 0.6
 BL_POWER = 90
 
@@ -95,8 +95,6 @@ class holonomic:
 
     def drive(vx, vy, wL, deadzone=5, pid=False):
         global SPEED_MULTIPLIER, PID_SPEED_MULTIPLIER
-        # Create a deadzone so that if the joystick isn't moved perfectly,
-        # the controller can still make the robot move perfectly.
         if math.fabs(vx) < math.fabs(deadzone):
             vx = 0
         if math.fabs(vy) < math.fabs(deadzone):
@@ -342,9 +340,9 @@ class shoot_mode:
             conveyer.off()
         #shooter_angle control
         if gamepad.is_key_pressed("Up"):
-            shooter.move(5, 9)
+            shooter.move(5, 10)
         elif gamepad.is_key_pressed("Down"):
-            shooter.move(-5, 9)
+            shooter.move(-5, 10)
         else:
             pass
  
@@ -360,18 +358,25 @@ class gripper_mode:
         else:
             lift.off()
         if gamepad.is_key_pressed("N1"):
-            gripper.set_reverse(True)
-            gripper.on()
+            gripper1.set_reverse(True)
+            gripper2.set_reverse(False)
+            gripper1.on()
+            gripper2.on()
+
         elif gamepad.is_key_pressed("N4"):
-            gripper.set_reverse(False)
-            gripper.on()
+            gripper1.set_reverse(False)
+            gripper2.set_reverse(True)
+            gripper1.on()
+            gripper2.on()
         else:
-            gripper.off()
+            gripper1.off()
+            gripper2.off()
         
 
 # Instantiate DC motors
-lift = dc_motor("DC2")
-gripper = dc_motor("DC1")
+lift = dc_motor("DC3")
+gripper2 = dc_motor("DC2")
+gripper1 = dc_motor("DC1")
 conveyer = dc_motor("DC5")
 entrance_feed = dc_motor("DC6")
 feeder = dc_motor("DC7")
