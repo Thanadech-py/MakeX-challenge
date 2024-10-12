@@ -18,7 +18,7 @@ left_back_wheel = encoder_motor_class("M5", "INDEX1")
 right_back_wheel = encoder_motor_class("M6", "INDEX1")
 
 MAX_SPEED = 255
-SPEED_MULTIPLIER = 3
+SPEED_MULTIPLIER = 2.1
 PID_SPEED_MULTIPLIER = 0.6
 BL_POWER = 90
 
@@ -350,21 +350,19 @@ class gripper_mode:
     # Method to control various robot functions based on button inputs
     def control_button():
         if gamepad.is_key_pressed("N2"):
-            lift.set_reverse(False)
-            lift.on()
+            lift.set_power(-75)
         elif gamepad.is_key_pressed("N3"):
-            lift.set_reverse(True)
-            lift.on()
+            lift.set_power(75)
         else:
-            lift.off()
+            lift.set_speed(0)
         if gamepad.is_key_pressed("N1"):
-            gripper1.set_reverse(True)
+            gripper1.set_reverse(False)
             gripper2.set_reverse(False)
             gripper1.on()
             gripper2.on()
 
         elif gamepad.is_key_pressed("N4"):
-            gripper1.set_reverse(False)
+            gripper1.set_reverse(True)
             gripper2.set_reverse(True)
             gripper1.on()
             gripper2.on()
@@ -374,7 +372,7 @@ class gripper_mode:
         
 
 # Instantiate DC motors
-lift = dc_motor("DC3")
+lift = encoder_motor_class("M4", "INDEX1")
 gripper2 = dc_motor("DC2")
 gripper1 = dc_motor("DC1")
 conveyer = dc_motor("DC5")
@@ -392,9 +390,9 @@ right_auto = ranging_sensor_class("PORT1", "INDEX2")
 while True:
     
     if power_manage_module.is_auto_mode():
-        if left_auto.get_distance() < 30:
+        if left_auto.get_distance() < 5:
             Auto.right()
-        elif right_auto.get_distance() < 30:
+        elif right_auto.get_distance() < 5:
             Auto.left()
         else:
             pass
