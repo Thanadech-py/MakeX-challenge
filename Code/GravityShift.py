@@ -158,66 +158,11 @@ class holonomic:
         holonomic.drive(0, 0, -power)
 
 class Auto:
-    #define Front_distance
-    Front_distance = ranging_sensor_class("PORT1", "INDEX3")
-
     def right():
-        entrance_feed.set_reverse(False)
-        power_expand_board.set_power("DC7", -25)
-        entrance_feed.on()
-        holonomic.slide_left(50)
-        time.sleep(1.75)
-        motors.stop()
-        time.sleep(1.0)
-        holonomic.move_forward(50)
-        time.sleep(1.5)
-        motors.stop()
-        time.sleep(0.9)
-        holonomic.slide_right(50)
-        time.sleep(1.7)
-        motors.stop()
-        holonomic.move_forward(50)
-        time.sleep(0.8)
-        holonomic.turn_left(50)
-        time.sleep(1.125)
-        motors.stop()
-        holonomic.slide_left(20)
-        time.sleep(0.9)
-        motors.stop()
-        holonomic.turn_right(20)
-        time.sleep(0.8)
-        motors.stop()
-        laser.set_reverse(True)
-        laser.on()
+        pass
     
     def left():
-        entrance_feed.set_reverse(False)
-        entrance_feed.on()
-        power_expand_board.set_power("DC7", -25)
-        holonomic.slide_right(50)
-        time.sleep(1.75)
-        motors.stop()
-        time.sleep(1.0)
-        holonomic.move_forward(50)
-        time.sleep(1.5)
-        motors.stop()
-        time.sleep(0.9)
-        holonomic.slide_left(50)
-        time.sleep(0.8)
-        motors.stop()
-        holonomic.move_forward(50)
-        time.sleep(0.8)
-        holonomic.turn_right(50)
-        time.sleep(1.125)
-        motors.stop()
-        holonomic.slide_right(20)
-        time.sleep(0.9)
-        motors.stop()
-        holonomic.turn_left(20)
-        time.sleep(0.8)
-        motors.stop()
-        laser.set_reverse(True)
-        laser.on()
+        pass
         
 
 class dc_motor:
@@ -372,7 +317,7 @@ class gripper_mode:
         
 
 # Instantiate DC motors
-lift = encoder_motor_class("M4", "INDEX1")
+lift = encoder_motor_class("M4", "INDEX1") # using encoder for spacific position of lift functions
 gripper2 = dc_motor("DC2")
 gripper1 = dc_motor("DC1")
 conveyer = dc_motor("DC5")
@@ -383,19 +328,10 @@ bl_2 = brushless_motor("BL2")
 shooter = smartservo_class("M1", "INDEX1") # only for angles
 laser = dc_motor("DC8")
 
-#define right and left distance
-left_auto = ranging_sensor_class("PORT1", "INDEX1")
-right_auto = ranging_sensor_class("PORT1", "INDEX2")
-
 while True:
     
     if power_manage_module.is_auto_mode():
-        if left_auto.get_distance() < 5:
-            Auto.right()
-        elif right_auto.get_distance() < 5:
-            Auto.left()
-        else:
-            pass
+        Auto.left()
     else:
         if gamepad.is_key_pressed("L2") and gamepad.is_key_pressed("R2"):
             runtime.change_mode()
